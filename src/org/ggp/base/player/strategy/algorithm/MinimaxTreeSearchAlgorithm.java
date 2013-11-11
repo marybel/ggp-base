@@ -1,14 +1,11 @@
 package org.ggp.base.player.strategy.algorithm;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.player.gamer.statemachine.strategic.MinimaxGamer;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
-import org.ggp.base.util.statemachine.Role;
-import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
@@ -27,15 +24,18 @@ public class MinimaxTreeSearchAlgorithm implements SearchAlgorithm {
 	@Override
 	public Move getBestMove(List<Move> moves, long finishByMillis) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
+		// given
 		Move bestMoveFound = moves.get(0);
-
+		// when
 		if (moves.size() > 1) {
+			MinimaxScoreCalculator scoreCalculator = new UnboundedMinmaxScoreCalculator(gamer, finishByMillis);
+
 			int score = 0;
 			for (Move move : moves) {
 				if (System.currentTimeMillis() > finishByMillis) {
 					break;
 				}
-				int result = calculateMinScore(getMachineState(), gamer.getRole(), move, finishByMillis);
+				int result = scoreCalculator.calculateMinScore(getMachineState(), move);
 				if (result == 100) {
 					return move;
 				}
@@ -46,78 +46,12 @@ public class MinimaxTreeSearchAlgorithm implements SearchAlgorithm {
 			}
 
 		}
+		// then
 		LOGGER.debug("Overtime was {} millis", System.currentTimeMillis() - finishByMillis);
 		return bestMoveFound;
 	}
 
 	private MachineState getMachineState() {
 		return gamer.getCurrentState();
-	}
-
-	private int calculateMinScore(MachineState currentState, Role role, Move playerMove, long finishByMillis)
-			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
-			SymbolFormatException {
-		Role opponent = getOpponent(role);
-		List<Move> opponentMoves = getStateMachine().getLegalMoves(currentState, opponent);
-		int score = 100;
-
-		for (Move opponentMove : opponentMoves) {
-			if (System.currentTimeMillis() > finishByMillis) {
-				break;
-			}
-			List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentMove);
-			MachineState newMachineStatetate = getStateMachine().getNextState(currentState, movesToSimulate);
-			int result = calculateMaxScore(newMachineStatetate, role, finishByMillis);
-			if (result < score) {
-				score = result;
-			}
-		}
-
-		return score;
-
-	}
-
-	private List<Move> getMovesToSimulate(Move currentlyExploredMove, Move opponentMove) {
-		List<Move> movesToSimulate = new ArrayList<>();
-		movesToSimulate.add(currentlyExploredMove);
-		movesToSimulate.add(opponentMove);
-
-		return movesToSimulate;
-	}
-
-	private StateMachine getStateMachine() {
-		return gamer.getStateMachine();
-	}
-
-	private int calculateMaxScore(MachineState state, Role role, long finishByMillis) throws MoveDefinitionException,
-			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
-		if (getStateMachine().isTerminal(state)) {
-			return getStateMachine().getGoal(state, role);
-		}
-
-		List<Move> moves = getStateMachine().getLegalMoves(state, role);
-		int score = 0;
-
-		for (Move move : moves) {
-			if (System.currentTimeMillis() > finishByMillis) {
-				break;
-			}
-			int result = calculateMinScore(state, role, move, finishByMillis);
-			if (result > score) {
-				score = result;
-			}
-
-		}
-
-		return score;
-	}
-
-	private Role getOpponent(Role role) {
-		for (Role gameRole : getStateMachine().getRoles()) {
-			if (role.getName() != gameRole.getName()) {
-				return gameRole;
-			}
-		}
-		throw new RuntimeException("No opponent found while doing Minimax Tree Search for role " + role.getName());
 	}
 }
