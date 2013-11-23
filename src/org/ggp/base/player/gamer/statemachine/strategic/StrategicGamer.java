@@ -33,7 +33,7 @@ public abstract class StrategicGamer extends SampleGamer {
 		List<Move> moves = theMachine.getLegalMoves(getCurrentState(), getRole());
 		Move selection;
 		try {
-			selection = searchAlgorithm.getBestMove(moves, finishByMillis);
+			selection = searchAlgorithm.getSelectedMove(moves, finishByMillis);
 		} catch (SymbolFormatException e) {
 			throw new RuntimeException(e);
 		}

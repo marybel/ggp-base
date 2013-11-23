@@ -1,9 +1,8 @@
-package org.ggp.base.player.gamer.statemachine.sample
+package org.ggp.base.player.gamer.statemachine.strategic
 
 import static org.junit.Assert.assertNotNull
 
 import org.ggp.base.game.TTTGameDescription
-import org.ggp.base.player.gamer.statemachine.strategic.StrategicGamer
 import org.ggp.base.util.game.Game
 import org.ggp.base.util.gdl.grammar.GdlConstant
 import org.ggp.base.util.gdl.grammar.GdlPool
@@ -12,31 +11,31 @@ import org.ggp.base.util.statemachine.Move
 
 import spock.lang.Specification
 
-class SampleMonteCarloGamerSpec extends Specification {
+class AlphaBetaSearchGamerSpec extends Specification {
 	private tttGameDescription = new TTTGameDescription()
 	private String theRulesheet = tttGameDescription.ruleSheet
 
-	def "Role in control with enough time will find a move"() {
+	def "Best move for TicTacToe is any move when Minimax unbounded"() {
 		given:
 		GdlConstant WHITE_PLAYER = GdlPool.getConstant("white")
-		long timeout = System.currentTimeMillis() + 6500
+		long timeout = System.currentTimeMillis() + 10000
 
-		SampleMonteCarloGamer theGamer = getGamer(WHITE_PLAYER)
+		StrategicGamer theGamer = getGamer(WHITE_PLAYER)
 		theGamer.metaGame(timeout)
 
 		when:
 		Move move = theGamer.stateMachineSelectMove(timeout)
 
 		then:
-		move.contents.toString() == '( mark 2 2 )'
+		move.contents.toString().indexOf("( mark ") > -1
 	}
 
 	def "Role not in control does not have a move to make"() {
 		given:
 		GdlConstant BLACK_PLAYER = GdlPool.getConstant("black")
-		long timeout = 10000
+		long timeout = System.currentTimeMillis() + 10000
 
-		SampleMonteCarloGamer theGamer = getGamer(BLACK_PLAYER)
+		StrategicGamer theGamer = getGamer(BLACK_PLAYER)
 		theGamer.metaGame(timeout)
 
 		when:
@@ -74,7 +73,7 @@ class SampleMonteCarloGamerSpec extends Specification {
 	}
 
 	private StrategicGamer getStrategicGamer(Match theMatch, GdlConstant roleName) {
-		SampleMonteCarloGamer gamer = new SampleMonteCarloGamer()
+		StrategicGamer gamer = new AlphaBetaSearchGamer()
 		gamer.match = theMatch
 		gamer.roleName = roleName
 

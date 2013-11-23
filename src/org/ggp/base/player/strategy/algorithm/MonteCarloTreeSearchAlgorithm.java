@@ -19,7 +19,7 @@ public class MonteCarloTreeSearchAlgorithm implements SearchAlgorithm {
 	}
 
 	@Override
-	public Move getBestMove(List<Move> moves, long finishByMillis) {
+	public Move getSelectedMove(List<Move> moves, long finishByMillis) {
 
 		if (moves.size() > 1) {
 			double[] moveExpectedPoints = getExpectedPointsForMoves(moves, finishByMillis);

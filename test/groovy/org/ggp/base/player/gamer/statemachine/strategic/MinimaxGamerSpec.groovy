@@ -15,7 +15,7 @@ class MinimaxGamerSpec extends Specification {
 	private tttGameDescription = new TTTGameDescription()
 	private String theRulesheet = tttGameDescription.ruleSheet
 
-	def "Best move for TicTacToe is any move when Minimax unbounded"() {
+	def "Selected move for TicTacToe is any move when Minimax unbounded"() {
 		given:
 		GdlConstant WHITE_PLAYER = GdlPool.getConstant("white")
 		long timeout = System.currentTimeMillis() + 10000
@@ -27,7 +27,7 @@ class MinimaxGamerSpec extends Specification {
 		Move bestMove = theGamer.stateMachineSelectMove(timeout)
 
 		then:
-		bestMove.contents.toString()
+		bestMove.contents.toString().indexOf("( mark ") > -1
 	}
 
 	def "Role not in control does not have a move to make"() {

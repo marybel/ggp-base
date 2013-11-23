@@ -10,7 +10,7 @@ import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
 
 public interface SearchAlgorithm {
 
-	Move getBestMove(List<Move> moves, long finishByMillis) throws MoveDefinitionException,
+	Move getSelectedMove(List<Move> moves, long finishByMillis) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException;
 
 }
