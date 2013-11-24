@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
+import org.ggp.base.util.gdl.grammar.GdlPool;
+import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.StateMachine;
@@ -49,5 +51,18 @@ public class AbstractScoreCalculator {
 
 	protected void setGamer(StateMachineGamer gamer) {
 		this.gamer = gamer;
+	}
+
+	protected List<Move> getOpponentMoves(MachineState machineState) {
+		try {
+			Role opponentRole = getOpponent(getGamer().getRole());
+			
+			return getStateMachine().getLegalMoves(machineState, opponentRole);
+		} catch (Exception e) {
+			List<Move> opponentMoves = new ArrayList<Move>();
+			opponentMoves.add(new Move(GdlPool.getConstant("NOOP")));
+			
+			return opponentMoves;
+		}
 	}
 }

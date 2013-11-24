@@ -20,20 +20,17 @@ public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
 
 	public int calculateMaxScore(MachineState state) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
-		// given
 		Role playerRole = getGamer().getRole();
-		// when
 		if (getStateMachine().isTerminal(state)) {
-			// then
+
 			return getStateMachine().getGoal(state, playerRole);
 		}
-		// or then
+
 		return calculateNoTerminalMaxScore(state, playerRole);
 	}
 
 	private int calculateNoTerminalMaxScore(MachineState state, Role playerRole) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
-		// given
 		int score = 0;
 		List<Move> moves = getStateMachine().getLegalMoves(state, playerRole);
 		// when
@@ -75,11 +72,4 @@ public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
 		// then
 		return score;
 	}
-
-	private List<Move> getOpponentMoves(MachineState machineState) throws MoveDefinitionException {
-		Role opponentRole = getOpponent(getGamer().getRole());
-		List<Move> opponentMoves = getStateMachine().getLegalMoves(machineState, opponentRole);
-		return opponentMoves;
-	}
-
 }
