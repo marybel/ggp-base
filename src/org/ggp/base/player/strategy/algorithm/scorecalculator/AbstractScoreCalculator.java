@@ -49,20 +49,24 @@ public class AbstractScoreCalculator {
 
 	}
 
-	protected void setGamer(StateMachineGamer gamer) {
+	public void setGamer(StateMachineGamer gamer) {
 		this.gamer = gamer;
 	}
 
 	protected List<Move> getOpponentMoves(MachineState machineState) {
 		try {
 			Role opponentRole = getOpponent(getGamer().getRole());
-			
+
 			return getStateMachine().getLegalMoves(machineState, opponentRole);
 		} catch (Exception e) {
 			List<Move> opponentMoves = new ArrayList<Move>();
 			opponentMoves.add(new Move(GdlPool.getConstant("NOOP")));
-			
+
 			return opponentMoves;
 		}
+	}
+
+	protected MachineState getMachineState() {
+		return gamer.getCurrentState();
 	}
 }

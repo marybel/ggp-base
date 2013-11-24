@@ -2,7 +2,7 @@ package org.ggp.base.player.gamer.statemachine.strategic;
 
 import org.ggp.base.player.strategy.algorithm.FixedDepthTreeSearchAlgorithm;
 import org.ggp.base.player.strategy.algorithm.scorecalculator.HeuristicFunction;
-import org.ggp.base.player.strategy.algorithm.scorecalculator.MinimumScoreHeuristic;
+import org.ggp.base.player.strategy.algorithm.scorecalculator.MobilityHeuristicFunction;
 
 /**
  * Created with IntelliJ IDEA. User: marybel.archer Date: 11/23/13 Time: 1:23 PM
@@ -10,12 +10,13 @@ import org.ggp.base.player.strategy.algorithm.scorecalculator.MinimumScoreHeuris
  */
 public class FixedDepthGamer extends StrategicGamer {
 
-	private Integer levelLimit = 10;
-	private HeuristicFunction heuristicFunction = new MinimumScoreHeuristic();
+	private Integer levelLimit = 100;
+	private HeuristicFunction heuristicFunction = new MobilityHeuristicFunction();
 
 	public FixedDepthGamer(HeuristicFunction heuristicFunction, Integer levelLimit) {
 		super.setSearchAlgorithm(new FixedDepthTreeSearchAlgorithm(this));
 		this.heuristicFunction = heuristicFunction;
+		this.heuristicFunction.setGamer(this);
 		this.levelLimit = levelLimit;
 	}
 

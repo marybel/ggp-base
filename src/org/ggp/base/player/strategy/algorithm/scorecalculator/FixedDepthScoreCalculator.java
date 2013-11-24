@@ -38,7 +38,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
 			SymbolFormatException {
 		if (hasMaxLevelBeenReach(level)) {
-			int heuristicScore = fixedDepthGamer.getHeuristicFunction().getScore();
+			int heuristicScore = fixedDepthGamer.getHeuristicFunction().getScore(state, playerRole);
 			LOGGER.debug("Returning {} because exiding level limit {}", heuristicScore,
 					((FixedDepthGamer) getGamer()).getLevelLimit());
 
