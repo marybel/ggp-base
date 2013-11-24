@@ -2,9 +2,8 @@ package org.ggp.base.player.strategy.algorithm;
 
 import java.util.List;
 
-import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
-import org.ggp.base.player.gamer.statemachine.strategic.MinimaxGamer;
-import org.ggp.base.player.strategy.algorithm.scorecalculator.UnboundedMinmaxScoreCalculator;
+import org.ggp.base.player.gamer.statemachine.strategic.FixedDepthGamer;
+import org.ggp.base.player.strategy.algorithm.scorecalculator.FixedDepthScoreCalculator;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
@@ -14,12 +13,12 @@ import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MinimaxTreeSearchAlgorithm implements SearchAlgorithm {
-	private static Logger LOGGER = LoggerFactory.getLogger(MinimaxTreeSearchAlgorithm.class);
-	private StateMachineGamer gamer;
+public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
+	private static Logger LOGGER = LoggerFactory.getLogger(FixedDepthTreeSearchAlgorithm.class);
+	private FixedDepthGamer gamer;
 
-	public MinimaxTreeSearchAlgorithm(MinimaxGamer minimaxGamer) {
-		this.gamer = minimaxGamer;
+	public FixedDepthTreeSearchAlgorithm(FixedDepthGamer gamer) {
+		this.gamer = gamer;
 	}
 
 	@Override
@@ -29,14 +28,14 @@ public class MinimaxTreeSearchAlgorithm implements SearchAlgorithm {
 		Move bestMoveFound = moves.get(0);
 		// when
 		if (moves.size() > 1) {
-			UnboundedMinmaxScoreCalculator scoreCalculator = new UnboundedMinmaxScoreCalculator(gamer, finishByMillis);
-
+			FixedDepthScoreCalculator scoreCalculator = new
+					FixedDepthScoreCalculator(gamer, finishByMillis);
 			int score = 0;
 			for (Move move : moves) {
 				if (System.currentTimeMillis() > finishByMillis) {
 					break;
 				}
-				int result = scoreCalculator.calculateMinScore(getMachineState(), move);
+				int result = scoreCalculator.calculateMinScore(getMachineState(), move, 0);
 				if (result == 100) {
 					return move;
 				}
@@ -45,7 +44,6 @@ public class MinimaxTreeSearchAlgorithm implements SearchAlgorithm {
 					bestMoveFound = move;
 				}
 			}
-
 		}
 		// then
 		LOGGER.debug("Overtime was {} millis", System.currentTimeMillis() - finishByMillis);

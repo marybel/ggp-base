@@ -1,4 +1,4 @@
-package org.ggp.base.player.strategy.algorithm;
+package org.ggp.base.player.strategy.algorithm.scorecalculator;
 
 import java.util.ArrayList;
 import java.util.List;

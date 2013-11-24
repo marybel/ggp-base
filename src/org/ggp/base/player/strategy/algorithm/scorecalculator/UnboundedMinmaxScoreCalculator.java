@@ -1,4 +1,4 @@
-package org.ggp.base.player.strategy.algorithm;
+package org.ggp.base.player.strategy.algorithm.scorecalculator;
 
 import java.util.List;
 
@@ -10,80 +10,76 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class AlphaBetaScoreCalculator extends AbstractScoreCalculator {
-	private static Logger LOGGER = LoggerFactory.getLogger(AlphaBetaScoreCalculator.class);
-
-	public AlphaBetaScoreCalculator(StateMachineGamer gamer, long finishByMillis) {
+public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
+	
+	public UnboundedMinmaxScoreCalculator(StateMachineGamer gamer, long finishByMillis) {
 		setGamer(gamer);
 		setFinishByMillis(finishByMillis);
 	}
 
-	public int calculateMaxScore(MachineState state, int alpha, int beta) throws MoveDefinitionException,
+	public int calculateMaxScore(MachineState state) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
+		// given
 		Role playerRole = getGamer().getRole();
-
+		// when
 		if (getStateMachine().isTerminal(state)) {
-
+			// then
 			return getStateMachine().getGoal(state, playerRole);
 		}
-
-		return calculateNoTerminalMaxScore(state, playerRole, alpha, beta);
+		// or then
+		return calculateNoTerminalMaxScore(state, playerRole);
 	}
 
-	private int calculateNoTerminalMaxScore(MachineState state, Role playerRole, int alpha, int beta)
-			throws MoveDefinitionException,
+	private int calculateNoTerminalMaxScore(MachineState state, Role playerRole) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
+		// given
+		int score = 0;
 		List<Move> moves = getStateMachine().getLegalMoves(state, playerRole);
-
+		// when
 		for (Move move : moves) {
 			if (System.currentTimeMillis() > getFinishByMillis()) {
-				LOGGER.info("Cutting alpha-beta search short");
 				break;
 			}
 
-			int result = calculateMinScore(state, move, alpha, beta);
-
-			if (alpha <= result) {
-				alpha = result;
-			}
-
-			if (alpha >= beta) {
-				return beta;
+			int result = calculateMinScore(state, move);
+			if (result > score) {
+				score = result;
 			}
 
 		}
-
-		return alpha;
+		// then
+		return score;
 	}
 
-	public int calculateMinScore(MachineState machineState, Move playerMove, int alpha, int beta)
+	public int calculateMinScore(MachineState machineState, Move playerMove)
 			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
 			SymbolFormatException {
-
-		Role opponentRole = getOpponent(getGamer().getRole());
-		List<Move> opponentMoves = getStateMachine().getLegalMoves(machineState, opponentRole);
-
+		// given
+		int score = 100;
+		List<Move> opponentMoves = getOpponentMoves(machineState);
+		// when
 		for (Move opponentMove : opponentMoves) {
 			if (System.currentTimeMillis() > getFinishByMillis()) {
-				LOGGER.info("Cutting alpha-beta search short");
 				break;
 			}
 
 			List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentMove);
 			MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
-			int result = calculateMaxScore(newMachineState, alpha, beta);
-			if (beta > result) {
-				beta = result;
+			int result = calculateMaxScore(newMachineState);
+			if (result < score) {
+				score = result;
 			}
 
-			if (beta <= alpha) {
-				return alpha;
-			}
 		}
-
-		return beta;
+		// then
+		return score;
 	}
+
+	private List<Move> getOpponentMoves(MachineState machineState) throws MoveDefinitionException {
+		Role opponentRole = getOpponent(getGamer().getRole());
+		List<Move> opponentMoves = getStateMachine().getLegalMoves(machineState, opponentRole);
+		return opponentMoves;
+	}
+
 }
