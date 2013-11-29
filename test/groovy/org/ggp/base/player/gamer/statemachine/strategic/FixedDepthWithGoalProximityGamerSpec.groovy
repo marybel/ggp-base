@@ -17,7 +17,7 @@ class FixedDepthWithGoalProximityGamerSpec extends GamerSpecification {
 
 	def "Selected move for Alquerque is one of five when level limit is 100"() {
 		given:
-		gamer = new GoalProximityHeuristicFixedDepthGamer(100)
+		gamer = new GoalProximityHeuristicFixedDepthGamer(5)
 		GdlConstant RED_PLAYER = GdlPool.getConstant("red")
 		long timeout = System.currentTimeMillis() + 5000
 
@@ -34,7 +34,7 @@ class FixedDepthWithGoalProximityGamerSpec extends GamerSpecification {
 
 	def "Selected move for Alquerque is one of five when level limit is 10"() {
 		given:
-		gamer = new GoalProximityHeuristicFixedDepthGamer(9)
+		gamer = new GoalProximityHeuristicFixedDepthGamer(3)
 		GdlConstant RED_PLAYER = GdlPool.getConstant("red")
 		long timeout = System.currentTimeMillis() + 5000
 
@@ -51,7 +51,7 @@ class FixedDepthWithGoalProximityGamerSpec extends GamerSpecification {
 
 	def "Selected move for Alquerque is one of five when level limit is 0"() {
 		given:
-		gamer = new GoalProximityHeuristicFixedDepthGamer(0)
+		gamer = new GoalProximityHeuristicFixedDepthGamer(1)
 		GdlConstant RED_PLAYER = GdlPool.getConstant("red")
 		long timeout = System.currentTimeMillis() + 5000
 

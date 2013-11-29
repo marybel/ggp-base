@@ -1,7 +1,7 @@
 package org.ggp.base.player.gamer.statemachine.strategic
 
 import org.ggp.base.game.AlquerqueGameDescription
-import org.ggp.base.player.gamer.statemachine.strategic.fixedDepth.AbstractFixedDepthGamer;
+import org.ggp.base.player.gamer.statemachine.strategic.fixedDepth.AbstractFixedDepthGamer
 import org.ggp.base.player.gamer.statemachine.strategic.fixedDepth.MobilityHeuristicFixedDepthGamer
 import org.ggp.base.util.gdl.grammar.GdlConstant
 import org.ggp.base.util.gdl.grammar.GdlPool
@@ -17,7 +17,7 @@ class FixedDepthWithMobilityGamerSpec extends GamerSpecification {
 
 	def "Selected move for Alquerque is one of five when level limit is 100"() {
 		given:
-		gamer = new MobilityHeuristicFixedDepthGamer(100)
+		gamer = new MobilityHeuristicFixedDepthGamer(5)
 		GdlConstant RED_PLAYER = GdlPool.getConstant("red")
 		long timeout = System.currentTimeMillis() + 5000
 
@@ -34,7 +34,7 @@ class FixedDepthWithMobilityGamerSpec extends GamerSpecification {
 
 	def "Selected move for Alquerque is one of five when level limit is 10"() {
 		given:
-		gamer = new MobilityHeuristicFixedDepthGamer(9)
+		gamer = new MobilityHeuristicFixedDepthGamer(3)
 		GdlConstant RED_PLAYER = GdlPool.getConstant("red")
 		long timeout = System.currentTimeMillis() + 5000
 
@@ -51,7 +51,7 @@ class FixedDepthWithMobilityGamerSpec extends GamerSpecification {
 
 	def "Selected move for Alquerque is one of five when level limit is 0"() {
 		given:
-		gamer = new MobilityHeuristicFixedDepthGamer(0)
+		gamer = new MobilityHeuristicFixedDepthGamer(1)
 		GdlConstant RED_PLAYER = GdlPool.getConstant("red")
 		long timeout = System.currentTimeMillis() + 5000
 

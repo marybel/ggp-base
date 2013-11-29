@@ -10,11 +10,11 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
-	private static Logger LOGGER = LoggerFactory.getLogger(FixedDepthScoreCalculator.class);
+
+	private static final int MAX_GAME_SCORE = 100;
+	private static final int MIN_GAME_SCORE = 0;
 	private AbstractFixedDepthGamer fixedDepthGamer;
 
 	public FixedDepthScoreCalculator(AbstractFixedDepthGamer gamer, long finishByMillis) {
@@ -25,10 +25,11 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 
 	public int calculateMaxScore(MachineState state, Integer level) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
+		printLevel(level);
 		Role playerRole = getGamer().getRole();
 		if (getStateMachine().isTerminal(state)) {
 
-			return getStateMachine().getGoal(state, playerRole);
+			return getTerminalScore(state, playerRole, level);
 		}
 
 		return calculateNoTerminalMaxScore(state, playerRole, level);
@@ -38,11 +39,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
 			SymbolFormatException {
 		if (hasMaxLevelBeenReach(level)) {
-			int heuristicScore = fixedDepthGamer.getHeuristicFunction().getScore(state, playerRole);
-			LOGGER.debug("Returning {} because exiding level limit {}", heuristicScore,
-					((AbstractFixedDepthGamer) getGamer()).getLevelLimit());
-
-			return heuristicScore;
+			return getMaxLevelHeuristicScore(state, playerRole);
 		}
 
 		int score = 0;
@@ -55,10 +52,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 
 			int result = calculateMinScore(state, move, level);
 			if (result == 100) {
-				LOGGER.debug("Returning because 100 result found in level {}. Max level {}", level,
-						((AbstractFixedDepthGamer) getGamer()).getLevelLimit());
-
-				return 100;
+				return getMaxGameScore(move, level);
 			}
 			if (result > score) {
 				score = result;
@@ -85,7 +79,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 			MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
 			int result = calculateMaxScore(newMachineState, level + 1);
 			if (result == 0) {
-				return 0;
+				return getMinGameScore(level);
 			}
 			if (result < score) {
 				score = result;
@@ -99,5 +93,40 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 	private boolean hasMaxLevelBeenReach(Integer level) {
 
 		return level >= fixedDepthGamer.getLevelLimit();
+	}
+
+	private int getMaxLevelHeuristicScore(MachineState state, Role playerRole) throws MoveDefinitionException,
+			GoalDefinitionException {
+		int heuristicScore = fixedDepthGamer.getHeuristicFunction().getScore(state, playerRole);
+		System.out.print("L=" + ((AbstractFixedDepthGamer) getGamer()).getLevelLimit() + "{" + heuristicScore + "}");
+
+		return heuristicScore;
+	}
+
+	private int getTerminalScore(MachineState state, Role playerRole, Integer level) throws GoalDefinitionException {
+		int goal = getStateMachine().getGoal(state, playerRole);
+		System.out.print("LT" + level + "{" + goal + "}");
+
+		return goal;
+	}
+
+	private int getMaxGameScore(Move move, Integer level) {
+		System.out.print("L>" + level + "{" + MAX_GAME_SCORE + "}. " + move);
+
+		return MAX_GAME_SCORE;
+	}
+
+	private int getMinGameScore(Integer level) {
+		System.out.print("L<" + level + "{" + MIN_GAME_SCORE + "}");
+		return MIN_GAME_SCORE;
+	}
+
+	private void printLevel(Integer level) {
+		System.out.print("\n");
+		for (int i = 0; i < level; i++) {
+			System.out.print(".");
+
+		}
+
 	}
 }

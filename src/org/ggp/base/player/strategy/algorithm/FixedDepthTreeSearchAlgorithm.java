@@ -10,11 +10,8 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
-	private static Logger LOGGER = LoggerFactory.getLogger(FixedDepthTreeSearchAlgorithm.class);
 	private AbstractFixedDepthGamer gamer;
 
 	public FixedDepthTreeSearchAlgorithm(AbstractFixedDepthGamer gamer) {
@@ -25,29 +22,38 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 	public Move getSelectedMove(List<Move> moves, long finishByMillis) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
 		// given
-		Move bestMoveFound = moves.get(0);
+		int selectedMoveIndex = 0;
+		Move selectedMove = moves.get(selectedMoveIndex);
 		// when
 		if (moves.size() > 1) {
 			FixedDepthScoreCalculator scoreCalculator = new
 					FixedDepthScoreCalculator(gamer, finishByMillis);
 			int score = 0;
-			for (Move move : moves) {
+			for (int i = 0; i < moves.size(); i++) {
+				Move move = moves.get(i);
 				if (System.currentTimeMillis() > finishByMillis) {
 					break;
 				}
 				int result = scoreCalculator.calculateMinScore(getMachineState(), move, 0);
+				System.out.println("\nmove [" + moves.get(i) + "](" + i +
+						"/" + moves.size() + ").{" + result
+						+ "}");
 				if (result == 100) {
 					return move;
 				}
 				if (result > score) {
 					score = result;
-					bestMoveFound = move;
+					selectedMoveIndex = i;
+					selectedMove = move;
 				}
 			}
 		}
-		// then
-		LOGGER.debug("Overtime was {} millis", System.currentTimeMillis() - finishByMillis);
-		return bestMoveFound;
+
+		System.out.println("\nSelected move [" + selectedMove + "](" + selectedMoveIndex +
+				"/" + moves.size() + ").");
+		System.out.println("Overtime  {" + (System.currentTimeMillis() - finishByMillis) + "}");
+
+		return selectedMove;
 	}
 
 	private MachineState getMachineState() {
