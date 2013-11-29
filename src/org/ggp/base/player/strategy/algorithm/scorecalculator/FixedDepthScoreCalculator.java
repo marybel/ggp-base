@@ -2,7 +2,7 @@ package org.ggp.base.player.strategy.algorithm.scorecalculator;
 
 import java.util.List;
 
-import org.ggp.base.player.gamer.statemachine.strategic.FixedDepthGamer;
+import org.ggp.base.player.gamer.statemachine.strategic.fixedDepth.AbstractFixedDepthGamer;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
@@ -15,12 +15,12 @@ import org.slf4j.LoggerFactory;
 
 public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 	private static Logger LOGGER = LoggerFactory.getLogger(FixedDepthScoreCalculator.class);
-	private FixedDepthGamer fixedDepthGamer;
+	private AbstractFixedDepthGamer fixedDepthGamer;
 
-	public FixedDepthScoreCalculator(FixedDepthGamer gamer, long finishByMillis) {
+	public FixedDepthScoreCalculator(AbstractFixedDepthGamer gamer, long finishByMillis) {
 		setGamer(gamer);
 		setFinishByMillis(finishByMillis);
-		fixedDepthGamer = (FixedDepthGamer) getGamer();
+		fixedDepthGamer = (AbstractFixedDepthGamer) getGamer();
 	}
 
 	public int calculateMaxScore(MachineState state, Integer level) throws MoveDefinitionException,
@@ -40,7 +40,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 		if (hasMaxLevelBeenReach(level)) {
 			int heuristicScore = fixedDepthGamer.getHeuristicFunction().getScore(state, playerRole);
 			LOGGER.debug("Returning {} because exiding level limit {}", heuristicScore,
-					((FixedDepthGamer) getGamer()).getLevelLimit());
+					((AbstractFixedDepthGamer) getGamer()).getLevelLimit());
 
 			return heuristicScore;
 		}
@@ -56,7 +56,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 			int result = calculateMinScore(state, move, level);
 			if (result == 100) {
 				LOGGER.debug("Returning because 100 result found in level {}. Max level {}", level,
-						((FixedDepthGamer) getGamer()).getLevelLimit());
+						((AbstractFixedDepthGamer) getGamer()).getLevelLimit());
 
 				return 100;
 			}

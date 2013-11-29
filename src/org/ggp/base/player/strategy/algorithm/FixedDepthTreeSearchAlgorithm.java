@@ -2,7 +2,7 @@ package org.ggp.base.player.strategy.algorithm;
 
 import java.util.List;
 
-import org.ggp.base.player.gamer.statemachine.strategic.FixedDepthGamer;
+import org.ggp.base.player.gamer.statemachine.strategic.fixedDepth.AbstractFixedDepthGamer;
 import org.ggp.base.player.strategy.algorithm.scorecalculator.FixedDepthScoreCalculator;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 	private static Logger LOGGER = LoggerFactory.getLogger(FixedDepthTreeSearchAlgorithm.class);
-	private FixedDepthGamer gamer;
+	private AbstractFixedDepthGamer gamer;
 
-	public FixedDepthTreeSearchAlgorithm(FixedDepthGamer gamer) {
+	public FixedDepthTreeSearchAlgorithm(AbstractFixedDepthGamer gamer) {
 		this.gamer = gamer;
 	}
 
