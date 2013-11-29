@@ -21,14 +21,13 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 	@Override
 	public Move getSelectedMove(List<Move> moves, long finishByMillis) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
-		// given
 		int selectedMoveIndex = 0;
 		Move selectedMove = moves.get(selectedMoveIndex);
-		// when
+		int score = 0;
+
 		if (moves.size() > 1) {
 			FixedDepthScoreCalculator scoreCalculator = new
 					FixedDepthScoreCalculator(gamer, finishByMillis);
-			int score = 0;
 			for (int i = 0; i < moves.size(); i++) {
 				Move move = moves.get(i);
 				if (System.currentTimeMillis() > finishByMillis) {
@@ -50,8 +49,8 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 		}
 
 		System.out.println("\nSelected move [" + selectedMove + "](" + selectedMoveIndex +
-				"/" + moves.size() + ").");
-		System.out.println("Overtime  {" + (System.currentTimeMillis() - finishByMillis) + "}");
+				"/" + moves.size() + ") = " + score);
+		System.out.println("Overtime " + (System.currentTimeMillis() - finishByMillis) + " mills");
 
 		return selectedMove;
 	}
