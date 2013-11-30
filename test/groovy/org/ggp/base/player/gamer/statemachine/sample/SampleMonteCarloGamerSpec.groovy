@@ -28,7 +28,7 @@ class SampleMonteCarloGamerSpec extends Specification {
 		Move move = theGamer.stateMachineSelectMove(timeout)
 
 		then:
-		move.contents.toString() == '( mark 2 2 )'
+		move.contents.toString().indexOf('( mark 2 ') > -1
 	}
 
 	def "Role not in control does not have a move to make"() {

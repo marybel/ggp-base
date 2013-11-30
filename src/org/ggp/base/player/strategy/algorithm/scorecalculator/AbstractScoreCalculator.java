@@ -1,9 +1,12 @@
 package org.ggp.base.player.strategy.algorithm.scorecalculator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
+import org.ggp.base.util.gdl.grammar.GdlConstant;
 import org.ggp.base.util.gdl.grammar.GdlPool;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -19,7 +22,7 @@ public class AbstractScoreCalculator {
 		return gamer;
 	}
 
-	protected long getFinishByMillis() {
+	private long getFinishByMillis() {
 		return finishByMillis;
 	}
 
@@ -31,13 +34,19 @@ public class AbstractScoreCalculator {
 		return movesToSimulate;
 	}
 
-	protected Role getOpponent(Role role) {
+	protected List<Role> getOpponents(Role role) {
+		List<Role> opponentRoles = new ArrayList<>();
 		for (Role gameRole : getStateMachine().getRoles()) {
 			if (role.getName() != gameRole.getName()) {
-				return gameRole;
+				opponentRoles.add(gameRole);
+
 			}
 		}
-		throw new RuntimeException("No opponent found for role " + role.getName() + " while doing score calculation");
+		if (opponentRoles.isEmpty()) {
+			throw new RuntimeException("No opponent found for role " + role.getName()
+					+ " while doing score calculation");
+		}
+		return opponentRoles;
 	}
 
 	protected StateMachine getStateMachine() {
@@ -53,20 +62,32 @@ public class AbstractScoreCalculator {
 		this.gamer = gamer;
 	}
 
-	protected List<Move> getOpponentMoves(MachineState machineState) {
+	protected Map<Role, List<Move>> getOpponentMoves(MachineState machineState) {
+		Map<Role, List<Move>> opponentMoves = new HashMap<Role, List<Move>>();
 		try {
-			Role opponentRole = getOpponent(getGamer().getRole());
-
-			return getStateMachine().getLegalMoves(machineState, opponentRole);
+			for (Role opponentRole : getOpponents(getGamer().getRole())) {
+				opponentMoves.put(opponentRole, getStateMachine().getLegalMoves(machineState, opponentRole));
+			}
 		} catch (Exception e) {
-			List<Move> opponentMoves = new ArrayList<Move>();
-			opponentMoves.add(new Move(GdlPool.getConstant("NOOP")));
-
-			return opponentMoves;
+			opponentMoves.put(new Role(GdlPool.getConstant("noopPlayer")), getNoOppMoveList());
 		}
+		return opponentMoves;
+	}
+
+	private List<Move> getNoOppMoveList() {
+		ArrayList<Move> list = new ArrayList<>();
+		list.add(new Move(GdlPool.getConstant("NOOP")));
+		return list;
 	}
 
 	protected MachineState getMachineState() {
 		return gamer.getCurrentState();
+	}
+
+	protected long getFinishByMillis(int branchesLeftToSearch) {
+		long currentTimeMillis = System.currentTimeMillis();
+		long maxAllowedTimeForBranch = (getFinishByMillis() - currentTimeMillis) / branchesLeftToSearch;
+
+		return maxAllowedTimeForBranch + currentTimeMillis;
 	}
 }

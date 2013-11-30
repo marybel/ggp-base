@@ -1,6 +1,7 @@
 package org.ggp.base.player.strategy.algorithm.scorecalculator;
 
 import java.util.List;
+import java.util.Map;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.statemachine.MachineState;
@@ -34,11 +35,12 @@ public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
 		int score = 0;
 		List<Move> moves = getStateMachine().getLegalMoves(state, playerRole);
 		// when
-		for (Move move : moves) {
-			if (System.currentTimeMillis() > getFinishByMillis()) {
+		for (int i = 0; i < moves.size(); i++) {
+			if (System.currentTimeMillis() > getFinishByMillis(moves.size() - i)) {
 				break;
 			}
 
+			Move move = moves.get(i);
 			int result = calculateMinScore(state, move);
 			if (result > score) {
 				score = result;
@@ -54,22 +56,24 @@ public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
 			SymbolFormatException {
 		// given
 		int score = 100;
-		List<Move> opponentMoves = getOpponentMoves(machineState);
-		// when
-		for (Move opponentMove : opponentMoves) {
-			if (System.currentTimeMillis() > getFinishByMillis()) {
-				break;
-			}
+		Map<Role, List<Move>> opponentsMoves = getOpponentMoves(machineState);
+		for (java.util.Map.Entry<Role, List<Move>> opponentMovesEntry : opponentsMoves.entrySet()) {
+			List<Move> opponentMoves = opponentMovesEntry.getValue();
+			for (int i = 0; i < opponentMoves.size(); i++) {
+				if (System.currentTimeMillis() > getFinishByMillis(opponentMoves.size() - i)) {
+					break;
+				}
 
-			List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentMove);
-			MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
-			int result = calculateMaxScore(newMachineState);
-			if (result < score) {
-				score = result;
+				Move opponentMove = opponentMoves.get(i);
+				List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentMove);
+				MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
+				int result = calculateMaxScore(newMachineState);
+				if (result < score) {
+					score = result;
+				}
 			}
-
 		}
-		// then
+
 		return score;
 	}
 }

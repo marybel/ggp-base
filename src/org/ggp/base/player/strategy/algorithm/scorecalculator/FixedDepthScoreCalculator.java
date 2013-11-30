@@ -1,6 +1,7 @@
 package org.ggp.base.player.strategy.algorithm.scorecalculator;
 
 import java.util.List;
+import java.util.Map;
 
 import org.ggp.base.player.gamer.statemachine.strategic.fixedDepth.AbstractFixedDepthGamer;
 import org.ggp.base.util.statemachine.MachineState;
@@ -45,11 +46,12 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 		int score = 0;
 		List<Move> moves = getStateMachine().getLegalMoves(state, playerRole);
 		// when
-		for (Move move : moves) {
-			if (System.currentTimeMillis() > getFinishByMillis()) {
+		for (int i = 0; i < moves.size(); i++) {
+			if (System.currentTimeMillis() > getFinishByMillis(moves.size() - i)) {
 				break;
 			}
 
+			Move move = moves.get(i);
 			int result = calculateMinScore(state, move, level);
 			if (result == 100) {
 				return getMaxGameScore(move, level);
@@ -68,25 +70,26 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 			SymbolFormatException {
 		// given
 		int score = 100;
-		List<Move> opponentMoves = getOpponentMoves(machineState);
-		// when
-		for (Move opponentMove : opponentMoves) {
-			if (System.currentTimeMillis() > getFinishByMillis()) {
-				break;
+		Map<Role, List<Move>> opponentsMoves = getOpponentMoves(machineState);
+		for (java.util.Map.Entry<Role, List<Move>> opponentMovesEntry : opponentsMoves.entrySet()) {
+			List<Move> opponentMoves = opponentMovesEntry.getValue();
+			for (int i = 0; i < opponentMoves.size(); i++) {
+				if (System.currentTimeMillis() > getFinishByMillis(opponentMoves.size() - i)) {
+					break;
+				}
+				Move opponentMove = opponentMoves.get(i);
+				List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentMove);
+				MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
+				int result = calculateMaxScore(newMachineState, level + 1);
+				if (result == 0) {
+					return getMinGameScore(level);
+				}
+				if (result < score) {
+					score = result;
+				}
 			}
-
-			List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentMove);
-			MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
-			int result = calculateMaxScore(newMachineState, level + 1);
-			if (result == 0) {
-				return getMinGameScore(level);
-			}
-			if (result < score) {
-				score = result;
-			}
-
 		}
-		// then
+
 		return score;
 	}
 

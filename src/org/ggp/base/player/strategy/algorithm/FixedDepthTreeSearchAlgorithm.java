@@ -26,9 +26,9 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 		int score = 0;
 
 		if (moves.size() > 1) {
-			FixedDepthScoreCalculator scoreCalculator = new
-					FixedDepthScoreCalculator(gamer, finishByMillis);
 			for (int i = 0; i < moves.size(); i++) {
+				FixedDepthScoreCalculator scoreCalculator = new FixedDepthScoreCalculator(gamer,
+						getFinishByMillisForBranch(finishByMillis, moves.size() - i));
 				Move move = moves.get(i);
 				if (System.currentTimeMillis() > finishByMillis) {
 					break;
@@ -57,5 +57,14 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 
 	private MachineState getMachineState() {
 		return gamer.getCurrentState();
+	}
+
+	private long getFinishByMillisForBranch(long finishByMillis, int branchesLeftToSearch) {
+		long currentTimeMillis = System.currentTimeMillis();
+		long maxAllowedTimeForBranch = (finishByMillis - currentTimeMillis) / branchesLeftToSearch;
+		long finishByMillisForBranch = maxAllowedTimeForBranch + currentTimeMillis;
+		System.out.println("maxAllowedTimeForBranch = " + maxAllowedTimeForBranch);
+
+		return finishByMillisForBranch;
 	}
 }
