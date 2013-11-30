@@ -1,12 +1,9 @@
 package org.ggp.base.player.strategy.algorithm.scorecalculator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
-import org.ggp.base.util.gdl.grammar.GdlConstant;
 import org.ggp.base.util.gdl.grammar.GdlPool;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -26,15 +23,15 @@ public class AbstractScoreCalculator {
 		return finishByMillis;
 	}
 
-	protected List<Move> getMovesToSimulate(Move currentlyExploredMove, Move opponentMove) {
+	protected List<Move> getMovesToSimulate(Move currentlyExploredMove, List<Move> opponentsMove) {
 		List<Move> movesToSimulate = new ArrayList<>();
 		movesToSimulate.add(currentlyExploredMove);
-		movesToSimulate.add(opponentMove);
+		movesToSimulate.addAll(opponentsMove);
 
 		return movesToSimulate;
 	}
 
-	protected List<Role> getOpponents(Role role) {
+	private List<Role> getOpponents(Role role) {
 		List<Role> opponentRoles = new ArrayList<>();
 		for (Role gameRole : getStateMachine().getRoles()) {
 			if (role.getName() != gameRole.getName()) {
@@ -62,32 +59,34 @@ public class AbstractScoreCalculator {
 		this.gamer = gamer;
 	}
 
-	protected Map<Role, List<Move>> getOpponentMoves(MachineState machineState) {
-		Map<Role, List<Move>> opponentMoves = new HashMap<Role, List<Move>>();
+	protected List<Move> getOpponenstMove(MachineState machineState) {
+		List<Move> opponentMoves = new ArrayList<>();
 		try {
 			for (Role opponentRole : getOpponents(getGamer().getRole())) {
-				opponentMoves.put(opponentRole, getStateMachine().getLegalMoves(machineState, opponentRole));
+				opponentMoves.add(getStateMachine().getLegalMoves(machineState, opponentRole).get(0));
 			}
 		} catch (Exception e) {
-			opponentMoves.put(new Role(GdlPool.getConstant("noopPlayer")), getNoOppMoveList());
+			opponentMoves.add(new Move(GdlPool.getConstant("NOOP")));
 		}
-		return opponentMoves;
-	}
 
-	private List<Move> getNoOppMoveList() {
-		ArrayList<Move> list = new ArrayList<>();
-		list.add(new Move(GdlPool.getConstant("NOOP")));
-		return list;
+		return opponentMoves;
 	}
 
 	protected MachineState getMachineState() {
 		return gamer.getCurrentState();
 	}
 
-	protected long getFinishByMillis(int branchesLeftToSearch) {
+	private long getFinishByMillis(int branchesLeftToSearch) {
 		long currentTimeMillis = System.currentTimeMillis();
 		long maxAllowedTimeForBranch = (getFinishByMillis() - currentTimeMillis) / branchesLeftToSearch;
+		long finishByMillisForBranch = currentTimeMillis + maxAllowedTimeForBranch;
+		System.out.print("\nfinishByMillisForBranch = " + finishByMillisForBranch);
 
 		return maxAllowedTimeForBranch + currentTimeMillis;
+	}
+
+	protected boolean hasTimedout(int branchesLeftToSearch) {
+
+		return System.currentTimeMillis() > getFinishByMillis(branchesLeftToSearch);
 	}
 }

@@ -10,6 +10,8 @@ import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
 
 public interface SearchAlgorithm {
 
+	static final Integer DEFAULT_LEVEL_LIMIT_FACTOR = 4;
+
 	Move getSelectedMove(List<Move> moves, long finishByMillis) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException;
 

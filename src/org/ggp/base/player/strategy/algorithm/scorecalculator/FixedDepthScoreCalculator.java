@@ -1,7 +1,6 @@
 package org.ggp.base.player.strategy.algorithm.scorecalculator;
 
 import java.util.List;
-import java.util.Map;
 
 import org.ggp.base.player.gamer.statemachine.strategic.fixedDepth.AbstractFixedDepthGamer;
 import org.ggp.base.util.statemachine.MachineState;
@@ -26,7 +25,6 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 
 	public int calculateMaxScore(MachineState state, Integer level) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
-		printLevel(level);
 		Role playerRole = getGamer().getRole();
 		if (getStateMachine().isTerminal(state)) {
 
@@ -45,9 +43,10 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 
 		int score = 0;
 		List<Move> moves = getStateMachine().getLegalMoves(state, playerRole);
-		// when
+		
 		for (int i = 0; i < moves.size(); i++) {
-			if (System.currentTimeMillis() > getFinishByMillis(moves.size() - i)) {
+			int branchesLeftToSearch = moves.size() - i;
+			if (hasTimedout(branchesLeftToSearch)) {
 				break;
 			}
 
@@ -70,24 +69,15 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 			SymbolFormatException {
 		// given
 		int score = 100;
-		Map<Role, List<Move>> opponentsMoves = getOpponentMoves(machineState);
-		for (java.util.Map.Entry<Role, List<Move>> opponentMovesEntry : opponentsMoves.entrySet()) {
-			List<Move> opponentMoves = opponentMovesEntry.getValue();
-			for (int i = 0; i < opponentMoves.size(); i++) {
-				if (System.currentTimeMillis() > getFinishByMillis(opponentMoves.size() - i)) {
-					break;
-				}
-				Move opponentMove = opponentMoves.get(i);
-				List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentMove);
-				MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
-				int result = calculateMaxScore(newMachineState, level + 1);
-				if (result == 0) {
-					return getMinGameScore(level);
-				}
-				if (result < score) {
-					score = result;
-				}
-			}
+		List<Move> opponentsMoves = getOpponenstMove(machineState);
+		List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentsMoves);
+		MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
+		int result = calculateMaxScore(newMachineState, level + 1);
+		if (result == 0) {
+			return getMinGameScore(level);
+		}
+		if (result < score) {
+			score = result;
 		}
 
 		return score;
@@ -121,15 +111,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 
 	private int getMinGameScore(Integer level) {
 		System.out.print("L<" + level + "{" + MIN_GAME_SCORE + "}");
+
 		return MIN_GAME_SCORE;
-	}
-
-	private void printLevel(Integer level) {
-		System.out.print("\n");
-		for (int i = 0; i < level; i++) {
-			System.out.print(".");
-
-		}
-
 	}
 }

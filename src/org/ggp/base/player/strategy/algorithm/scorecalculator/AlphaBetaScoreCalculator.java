@@ -1,7 +1,6 @@
 package org.ggp.base.player.strategy.algorithm.scorecalculator;
 
 import java.util.List;
-import java.util.Map;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.statemachine.MachineState;
@@ -40,7 +39,8 @@ public class AlphaBetaScoreCalculator extends AbstractScoreCalculator {
 		List<Move> moves = getStateMachine().getLegalMoves(state, playerRole);
 
 		for (int i = 0; i < moves.size(); i++) {
-			if (System.currentTimeMillis() > getFinishByMillis(moves.size() - i)) {
+			int branchesLeftToSearch = moves.size() - i;
+			if (hasTimedout(branchesLeftToSearch)) {
 				LOGGER.debug("Cutting alpha-beta search short");
 				break;
 			}
@@ -63,28 +63,16 @@ public class AlphaBetaScoreCalculator extends AbstractScoreCalculator {
 	public int calculateMinScore(MachineState machineState, Move playerMove, int alpha, int beta)
 			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
 			SymbolFormatException {
-		Map<Role, List<Move>> opponentsMoves = getOpponentMoves(machineState);
-		for (java.util.Map.Entry<Role, List<Move>> opponentMovesEntry : opponentsMoves.entrySet()) {
-			List<Move> opponentMoves = opponentMovesEntry.getValue();
-			for (int i = 0; i < opponentMoves.size(); i++) {
-				if (System.currentTimeMillis() > getFinishByMillis(opponentMoves.size() - i)) {
-					LOGGER.debug("Cutting alpha-beta search short");
-					break;
-				}
+		List<Move> opponentsMove = getOpponenstMove(machineState);
+		List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentsMove);
+		MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
+		int result = calculateMaxScore(newMachineState, alpha, beta);
+		if (beta > result) {
+			beta = result;
+		}
 
-				Move opponentMove = opponentMoves.get(i);
-				List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentMove);
-				MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
-				int result = calculateMaxScore(newMachineState, alpha, beta);
-				if (beta > result) {
-					beta = result;
-				}
-
-				if (beta <= alpha) {
-					return alpha;
-				}
-
-			}
+		if (beta <= alpha) {
+			return alpha;
 		}
 
 		return beta;

@@ -27,4 +27,9 @@ public abstract class AbstractFixedDepthGamer extends StrategicGamer {
 	public Integer getLevelLimit() {
 		return levelLimit;
 	}
+
+	public void setLevelLimit(Integer levelLimit) {
+		this.levelLimit = levelLimit;
+		System.out.println("Setting levelLimit = " + this.levelLimit);
+	}
 }

@@ -13,6 +13,7 @@ import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
 
 public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 	private AbstractFixedDepthGamer gamer;
+	private long finishByMillis;
 
 	public FixedDepthTreeSearchAlgorithm(AbstractFixedDepthGamer gamer) {
 		this.gamer = gamer;
@@ -21,22 +22,22 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 	@Override
 	public Move getSelectedMove(List<Move> moves, long finishByMillis) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
+		this.finishByMillis = finishByMillis;
 		int selectedMoveIndex = 0;
 		Move selectedMove = moves.get(selectedMoveIndex);
 		int score = 0;
 
 		if (moves.size() > 1) {
 			for (int i = 0; i < moves.size(); i++) {
+				gamer.setLevelLimit((DEFAULT_LEVEL_LIMIT_FACTOR * Math
+						.round(getMillisToTimeout() / 10000)));
 				FixedDepthScoreCalculator scoreCalculator = new FixedDepthScoreCalculator(gamer,
-						getFinishByMillisForBranch(finishByMillis, moves.size() - i));
+						getFinishByMillisForLevel0Node(moves.size() - i));
 				Move move = moves.get(i);
-				if (System.currentTimeMillis() > finishByMillis) {
+				if (hasTimedOut()) {
 					break;
 				}
 				int result = scoreCalculator.calculateMinScore(getMachineState(), move, 0);
-				System.out.println("\nmove [" + moves.get(i) + "](" + i +
-						"/" + moves.size() + ").{" + result
-						+ "}");
 				if (result == 100) {
 					return move;
 				}
@@ -48,9 +49,9 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 			}
 		}
 
-		System.out.println("\nSelected move [" + selectedMove + "](" + selectedMoveIndex +
-				"/" + moves.size() + ") = " + score);
-		System.out.println("Overtime " + (System.currentTimeMillis() - finishByMillis) + " mills");
+		System.out.println("\nSelected " + selectedMove + "[" + selectedMoveIndex +
+				"/" + moves.size() + "] = " + score);
+		System.out.println("Overtime " + (System.currentTimeMillis() - getFinishByMillis()) + " mills");
 
 		return selectedMove;
 	}
@@ -59,12 +60,25 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 		return gamer.getCurrentState();
 	}
 
-	private long getFinishByMillisForBranch(long finishByMillis, int branchesLeftToSearch) {
+	private long getFinishByMillisForLevel0Node(int branchesLeftToSearch) {
 		long currentTimeMillis = System.currentTimeMillis();
-		long maxAllowedTimeForBranch = (finishByMillis - currentTimeMillis) / branchesLeftToSearch;
-		long finishByMillisForBranch = maxAllowedTimeForBranch + currentTimeMillis;
-		System.out.println("maxAllowedTimeForBranch = " + maxAllowedTimeForBranch);
+		long millisToTimeout = getMillisToTimeout();
+		long maxAllowedTimeForBranch = millisToTimeout / branchesLeftToSearch;
+		long finishByMillisForBranch = currentTimeMillis + maxAllowedTimeForBranch;
+		System.out.print("\nfinishByMillisForLevel0Node = " + finishByMillisForBranch);
 
 		return finishByMillisForBranch;
+	}
+
+	private long getFinishByMillis() {
+		return finishByMillis;
+	}
+
+	private boolean hasTimedOut() {
+		return System.currentTimeMillis() > getFinishByMillis();
+	}
+
+	private long getMillisToTimeout() {
+		return getFinishByMillis() - System.currentTimeMillis();
 	}
 }
