@@ -10,6 +10,6 @@ public class GoalProximityHeuristicFunction extends AbstractScoreCalculator impl
 	@Override
 	public int getScore(MachineState state, Role playerRole) throws MoveDefinitionException, GoalDefinitionException {
 
-		return getGamer().getStateMachine().getGoal(state, playerRole);
+		return getGoal(state, playerRole);
 	}
 }

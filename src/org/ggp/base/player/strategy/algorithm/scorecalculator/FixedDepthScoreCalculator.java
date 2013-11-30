@@ -97,7 +97,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 	}
 
 	private int getTerminalScore(MachineState state, Role playerRole, Integer level) throws GoalDefinitionException {
-		int goal = getStateMachine().getGoal(state, playerRole);
+		int goal = getGoal(state, playerRole);
 		System.out.print("LT" + level + "{" + goal + "}");
 
 		return goal;

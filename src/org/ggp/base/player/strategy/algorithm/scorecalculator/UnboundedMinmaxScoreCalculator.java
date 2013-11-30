@@ -12,7 +12,7 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
 
 public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
-	
+
 	public UnboundedMinmaxScoreCalculator(StateMachineGamer gamer, long finishByMillis) {
 		setGamer(gamer);
 		setFinishByMillis(finishByMillis);
@@ -23,7 +23,7 @@ public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
 		Role playerRole = getGamer().getRole();
 		if (getStateMachine().isTerminal(state)) {
 
-			return getStateMachine().getGoal(state, playerRole);
+			return getGoal(state, playerRole);
 		}
 
 		return calculateNoTerminalMaxScore(state, playerRole);

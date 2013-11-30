@@ -6,7 +6,6 @@ import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
-import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
@@ -22,12 +21,12 @@ public class AlphaBetaScoreCalculator extends AbstractScoreCalculator {
 	}
 
 	public int calculateMaxScore(MachineState state, int alpha, int beta) throws MoveDefinitionException,
-			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
+			TransitionDefinitionException, SymbolFormatException {
 		Role playerRole = getGamer().getRole();
 
 		if (getStateMachine().isTerminal(state)) {
 
-			return getStateMachine().getGoal(state, playerRole);
+			return getGoal(state, playerRole);
 		}
 
 		return calculateNoTerminalMaxScore(state, playerRole, alpha, beta);
@@ -35,7 +34,7 @@ public class AlphaBetaScoreCalculator extends AbstractScoreCalculator {
 
 	private int calculateNoTerminalMaxScore(MachineState state, Role playerRole, int alpha, int beta)
 			throws MoveDefinitionException,
-			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
+			TransitionDefinitionException, SymbolFormatException {
 		List<Move> moves = getStateMachine().getLegalMoves(state, playerRole);
 
 		for (int i = 0; i < moves.size(); i++) {
@@ -61,8 +60,7 @@ public class AlphaBetaScoreCalculator extends AbstractScoreCalculator {
 	}
 
 	public int calculateMinScore(MachineState machineState, Move playerMove, int alpha, int beta)
-			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
-			SymbolFormatException {
+			throws MoveDefinitionException, TransitionDefinitionException, SymbolFormatException {
 		List<Move> opponentsMove = getOpponenstMove(machineState);
 		List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentsMove);
 		MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
