@@ -1,7 +1,7 @@
 package org.ggp.base.player.gamer.statemachine.sample;
 
 import org.ggp.base.player.gamer.statemachine.strategic.StrategicGamer;
-import org.ggp.base.player.strategy.algorithm.MonteCarloTreeSearchAlgorithm;
+import org.ggp.base.player.strategy.algorithm.MonteCarloSearchAlgorithm;
 
 /**
  * SampleMonteCarloGamer is a simple state-machine-based Gamer. It will use a
@@ -21,6 +21,6 @@ import org.ggp.base.player.strategy.algorithm.MonteCarloTreeSearchAlgorithm;
 public class SampleMonteCarloGamer extends StrategicGamer {
 
 	public SampleMonteCarloGamer() {
-		super.setSearchAlgorithm(new MonteCarloTreeSearchAlgorithm(this));
+		super.setSearchAlgorithm(new MonteCarloSearchAlgorithm(this));
 	}
 }

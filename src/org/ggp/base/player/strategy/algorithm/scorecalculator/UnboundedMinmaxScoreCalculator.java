@@ -55,8 +55,7 @@ public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
 			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
 			SymbolFormatException {
 		int score = 100;
-		List<Move> opponentsMove = getOpponenstMove(machineState);
-		List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentsMove);
+		List<Move> movesToSimulate = getMovesToSimulate(playerMove, machineState);
 		MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
 		int result = calculateMaxScore(newMachineState);
 		if (result < score) {

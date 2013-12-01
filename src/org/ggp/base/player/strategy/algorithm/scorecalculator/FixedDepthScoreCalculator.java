@@ -69,8 +69,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 			SymbolFormatException {
 		// given
 		int score = 100;
-		List<Move> opponentsMoves = getOpponenstMove(machineState);
-		List<Move> movesToSimulate = getMovesToSimulate(playerMove, opponentsMoves);
+		List<Move> movesToSimulate = getMovesToSimulate(playerMove, machineState);
 		MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
 		int result = calculateMaxScore(newMachineState, level + 1);
 		if (result == 0) {
