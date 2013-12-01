@@ -12,9 +12,6 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
 
 public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
-
-	private static final int MAX_GAME_SCORE = 100;
-	private static final int MIN_GAME_SCORE = 0;
 	private AbstractFixedDepthGamer fixedDepthGamer;
 
 	public FixedDepthScoreCalculator(AbstractFixedDepthGamer gamer, long finishByMillis) {
@@ -41,9 +38,9 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 			return getMaxLevelHeuristicScore(state, playerRole);
 		}
 
-		int score = 0;
+		int score = MIN_GAME_SCORE;
 		List<Move> moves = getStateMachine().getLegalMoves(state, playerRole);
-		
+
 		for (int i = 0; i < moves.size(); i++) {
 			int branchesLeftToSearch = moves.size() - i;
 			if (hasTimedout(branchesLeftToSearch)) {
@@ -52,7 +49,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 
 			Move move = moves.get(i);
 			int result = calculateMinScore(state, move, level);
-			if (result == 100) {
+			if (result == MAX_GAME_SCORE) {
 				return getMaxGameScore(move, level);
 			}
 			if (result > score) {
@@ -67,14 +64,14 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 	public int calculateMinScore(MachineState machineState, Move playerMove, Integer level)
 			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
 			SymbolFormatException {
-		// given
-		int score = 100;
-		List<Move> movesToSimulate = getMovesToSimulate(playerMove, machineState);
-		MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
+		MachineState newMachineState = simulateMove(machineState, playerMove);
 		int result = calculateMaxScore(newMachineState, level + 1);
-		if (result == 0) {
+		if (result == MIN_GAME_SCORE) {
+
 			return getMinGameScore(level);
 		}
+
+		int score = MAX_GAME_SCORE;
 		if (result < score) {
 			score = result;
 		}

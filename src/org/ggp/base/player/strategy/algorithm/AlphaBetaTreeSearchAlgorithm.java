@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
+import org.ggp.base.player.strategy.algorithm.scorecalculator.AbstractScoreCalculator;
 import org.ggp.base.player.strategy.algorithm.scorecalculator.AlphaBetaScoreCalculator;
 import org.ggp.base.util.gdl.grammar.GdlPool;
 import org.ggp.base.util.statemachine.MachineState;
@@ -32,7 +33,7 @@ public class AlphaBetaTreeSearchAlgorithm implements SearchAlgorithm {
 		if (moves.size() > 1) {
 			AlphaBetaScoreCalculator scoreCalculator = new AlphaBetaScoreCalculator(gamer, finishByMillis);
 
-			int score = 0;
+			int score = AbstractScoreCalculator.MIN_GAME_SCORE;
 			for (Move move : moves) {
 				if (System.currentTimeMillis() > finishByMillis) {
 					break;
@@ -41,7 +42,7 @@ public class AlphaBetaTreeSearchAlgorithm implements SearchAlgorithm {
 				MachineState newMachineState = gamer.getStateMachine().getNextState(getMachineState(), movesToSimulate);
 
 				int result = scoreCalculator.calculateMaxScore(newMachineState, 0, 100);
-				if (result == 100) {
+				if (result == AbstractScoreCalculator.MAX_GAME_SCORE) {
 					return move;
 				}
 				if (result > score) {

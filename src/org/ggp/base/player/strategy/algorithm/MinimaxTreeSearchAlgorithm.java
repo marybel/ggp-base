@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.player.gamer.statemachine.strategic.MinimaxGamer;
+import org.ggp.base.player.strategy.algorithm.scorecalculator.AbstractScoreCalculator;
 import org.ggp.base.player.strategy.algorithm.scorecalculator.UnboundedMinmaxScoreCalculator;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -31,13 +32,13 @@ public class MinimaxTreeSearchAlgorithm implements SearchAlgorithm {
 		if (moves.size() > 1) {
 			UnboundedMinmaxScoreCalculator scoreCalculator = new UnboundedMinmaxScoreCalculator(gamer, finishByMillis);
 
-			int score = 0;
+			int score = AbstractScoreCalculator.MIN_GAME_SCORE;
 			for (Move move : moves) {
 				if (System.currentTimeMillis() > finishByMillis) {
 					break;
 				}
 				int result = scoreCalculator.calculateMinScore(getMachineState(), move);
-				if (result == 100) {
+				if (result == AbstractScoreCalculator.MAX_GAME_SCORE) {
 					return move;
 				}
 				if (result > score) {

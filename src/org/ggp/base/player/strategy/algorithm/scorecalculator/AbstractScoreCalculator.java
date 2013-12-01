@@ -11,9 +11,11 @@ import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
+import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
 public class AbstractScoreCalculator {
-
+	public static final int MAX_GAME_SCORE = 100;
+	public static final int MIN_GAME_SCORE = 0;
 	private StateMachineGamer gamer;
 	private long finishByMillis;
 
@@ -77,5 +79,16 @@ public class AbstractScoreCalculator {
 			System.out.println(e.getMessage());
 			return 0;
 		}
+	}
+
+	protected Role getGamerRole() {
+		return getGamer().getRole();
+	}
+
+	protected MachineState simulateMove(MachineState machineState, Move playerMove)
+			throws TransitionDefinitionException {
+		List<Move> movesToSimulate = getMovesToSimulate(playerMove, machineState);
+
+		return getStateMachine().getNextState(machineState, movesToSimulate);
 	}
 }

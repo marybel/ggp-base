@@ -3,6 +3,7 @@ package org.ggp.base.player.strategy.algorithm;
 import java.util.List;
 
 import org.ggp.base.player.gamer.statemachine.strategic.fixedDepth.AbstractFixedDepthGamer;
+import org.ggp.base.player.strategy.algorithm.scorecalculator.AbstractScoreCalculator;
 import org.ggp.base.player.strategy.algorithm.scorecalculator.FixedDepthScoreCalculator;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -25,7 +26,7 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 		this.finishByMillis = finishByMillis;
 		int selectedMoveIndex = 0;
 		Move selectedMove = moves.get(selectedMoveIndex);
-		int score = 0;
+		int score = AbstractScoreCalculator.MIN_GAME_SCORE;
 
 		if (moves.size() > 1) {
 			for (int i = 0; i < moves.size(); i++) {
@@ -38,7 +39,7 @@ public class FixedDepthTreeSearchAlgorithm implements SearchAlgorithm {
 					break;
 				}
 				int result = scoreCalculator.calculateMinScore(getMachineState(), move, 0);
-				if (result == 100) {
+				if (result == AbstractScoreCalculator.MAX_GAME_SCORE) {
 					return move;
 				}
 				if (result > score) {

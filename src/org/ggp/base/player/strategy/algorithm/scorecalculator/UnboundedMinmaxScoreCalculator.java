@@ -31,7 +31,7 @@ public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
 
 	private int calculateNoTerminalMaxScore(MachineState state, Role playerRole) throws MoveDefinitionException,
 			TransitionDefinitionException, GoalDefinitionException, SymbolFormatException {
-		int score = 0;
+		int score = MIN_GAME_SCORE;
 		List<Move> moves = getStateMachine().getLegalMoves(state, playerRole);
 		// when
 		for (int i = 0; i < moves.size(); i++) {
@@ -54,9 +54,9 @@ public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
 	public int calculateMinScore(MachineState machineState, Move playerMove)
 			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
 			SymbolFormatException {
-		int score = 100;
-		List<Move> movesToSimulate = getMovesToSimulate(playerMove, machineState);
-		MachineState newMachineState = getStateMachine().getNextState(machineState, movesToSimulate);
+		int score = MAX_GAME_SCORE;
+
+		MachineState newMachineState = simulateMove(machineState, playerMove);
 		int result = calculateMaxScore(newMachineState);
 		if (result < score) {
 			score = result;
