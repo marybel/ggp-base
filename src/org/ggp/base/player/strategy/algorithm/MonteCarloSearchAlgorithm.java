@@ -7,8 +7,6 @@ import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.StateMachine;
-import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
-import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
 public class MonteCarloSearchAlgorithm implements SearchAlgorithm {
 	private int[] depth = new int[1];
@@ -22,15 +20,15 @@ public class MonteCarloSearchAlgorithm implements SearchAlgorithm {
 	@Override
 	public Move getSelectedMove(List<Move> moves, long finishByMillis) {
 		if (moves.size() > 1) {
-			int selectedMoveIndex = getSelectedIndex(moves, finishByMillis);
+			int highestScoredIndex = getHighestScoredIndex(moves, finishByMillis);
 
-			return moves.get(selectedMoveIndex);
+			return moves.get(highestScoredIndex);
 		}
 
 		return moves.get(0);
 	}
 
-	private int getSelectedIndex(List<Move> moves, long finishByMillis) {
+	private int getHighestScoredIndex(List<Move> moves, long finishByMillis) {
 		double[] moveExpectedPoints = getMoveExpectedPoints(moves, finishByMillis);
 
 		return getHighestScoredIndex(moves, moveExpectedPoints);
@@ -55,14 +53,14 @@ public class MonteCarloSearchAlgorithm implements SearchAlgorithm {
 			if (hasTimedOut(finishByMillis)) {
 				break;
 			}
-			int theScore = performDepthChargeFromMove(gamer.getCurrentState(), moves.get(i));
+			int theScore = performDepthChargeFromMove(moves.get(i));
 			moveTotalPoints[i] += theScore;
 			moveTotalAttempts[i] += 1;
 		}
 
 		double[] moveExpectedPoints = getMoveExpectedPoints(moves, moveTotalPoints, moveTotalAttempts);
 		System.out.println("moves = {" + moves + "}");
-		System.out.println("moveExpectedPoints = {" + moveExpectedPoints + "}");
+		System.out.println("moveExpectedPoints = {" + getMoveExpectedPointsStr(moveExpectedPoints) + "}");
 
 		return moveExpectedPoints;
 	}
@@ -71,18 +69,22 @@ public class MonteCarloSearchAlgorithm implements SearchAlgorithm {
 		return System.currentTimeMillis() > finishByMillis;
 	}
 
-	private int performDepthChargeFromMove(MachineState machineState, Move move) {
+	private int performDepthChargeFromMove(Move move) {
 		try {
 			Role role = gamer.getRole();
-			MachineState randomNextState = getStateMachine().getRandomNextState(machineState, role, move);
-			MachineState terminalMachineState = getStateMachine().performDepthCharge(randomNextState, depth);
+			MachineState randomNewState = getStateMachine().getRandomNextState(getCurrentMachineState(), role, move);
+			MachineState terminalFromRandomState = getStateMachine().performDepthCharge(randomNewState, depth);
 
-			return getStateMachine().getGoal(terminalMachineState, gamer.getRole());
+			return getStateMachine().getGoal(terminalFromRandomState, gamer.getRole());
 		} catch (Exception e) {
 			e.printStackTrace();
 
 			return 0;
 		}
+	}
+
+	private MachineState getCurrentMachineState() {
+		return gamer.getCurrentState();
 	}
 
 	private StateMachine getStateMachine() {
@@ -110,5 +112,14 @@ public class MonteCarloSearchAlgorithm implements SearchAlgorithm {
 		}
 
 		return moveExpectedPoints;
+	}
+	
+	private String getMoveExpectedPointsStr(double[] moveExpectedPoints) {
+		StringBuffer sBuffer = new StringBuffer("[");
+		for (int i = 0; i < moveExpectedPoints.length; i++) {
+			sBuffer.append(moveExpectedPoints[i]).append(",");
+		}
+
+		return sBuffer.append("]").toString();
 	}
 }
