@@ -1,6 +1,6 @@
 package org.ggp.base.player.gamer.statemachine.strategic.fixedDepth;
 
-import org.ggp.base.player.strategy.algorithm.scorecalculator.GoalProximityHeuristicFunction;
+import org.ggp.base.player.strategy.algorithm.scorecalculator.heuristic.GoalProximityHeuristicFunction;
 
 /**
  * Created with IntelliJ IDEA. User: marybel.archer Date: 11/23/13 Time: 1:23 PM

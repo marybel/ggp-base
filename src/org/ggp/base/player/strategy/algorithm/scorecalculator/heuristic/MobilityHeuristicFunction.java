@@ -1,7 +1,8 @@
-package org.ggp.base.player.strategy.algorithm.scorecalculator;
+package org.ggp.base.player.strategy.algorithm.scorecalculator.heuristic;
 
 import java.util.List;
 
+import org.ggp.base.player.strategy.algorithm.scorecalculator.AbstractScoreCalculator;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;

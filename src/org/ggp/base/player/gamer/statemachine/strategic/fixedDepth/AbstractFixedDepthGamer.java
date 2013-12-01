@@ -2,7 +2,7 @@ package org.ggp.base.player.gamer.statemachine.strategic.fixedDepth;
 
 import org.ggp.base.player.gamer.statemachine.strategic.StrategicGamer;
 import org.ggp.base.player.strategy.algorithm.FixedDepthTreeSearchAlgorithm;
-import org.ggp.base.player.strategy.algorithm.scorecalculator.HeuristicFunction;
+import org.ggp.base.player.strategy.algorithm.scorecalculator.heuristic.HeuristicFunction;
 
 /**
  * Created with IntelliJ IDEA. User: marybel.archer Date: 11/23/13 Time: 1:23 PM

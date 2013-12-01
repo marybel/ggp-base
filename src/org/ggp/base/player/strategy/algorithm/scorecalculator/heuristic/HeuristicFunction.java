@@ -1,4 +1,4 @@
-package org.ggp.base.player.strategy.algorithm.scorecalculator;
+package org.ggp.base.player.strategy.algorithm.scorecalculator.heuristic;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.statemachine.MachineState;
