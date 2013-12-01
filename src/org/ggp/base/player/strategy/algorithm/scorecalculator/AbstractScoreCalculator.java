@@ -27,7 +27,7 @@ public class AbstractScoreCalculator {
 		return finishByMillis;
 	}
 
-	protected List<Move> getMovesToSimulate(Move currentlyExploredMove, MachineState currentMachineState) {
+	private List<Move> getRandomJointMove(Move currentlyExploredMove, MachineState currentMachineState) {
 		try {
 			return getStateMachine().getRandomJointMove(currentMachineState, gamer.getRole(), currentlyExploredMove);
 		} catch (MoveDefinitionException e) {
@@ -62,7 +62,6 @@ public class AbstractScoreCalculator {
 		long currentTimeMillis = System.currentTimeMillis();
 		long maxAllowedTimeForBranch = (getFinishByMillis() - currentTimeMillis) / branchesLeftToSearch;
 		long finishByMillisForBranch = currentTimeMillis + maxAllowedTimeForBranch;
-		System.out.print("\nfinishByMillisForBranch = " + finishByMillisForBranch);
 
 		return maxAllowedTimeForBranch + currentTimeMillis;
 	}
@@ -85,10 +84,13 @@ public class AbstractScoreCalculator {
 		return getGamer().getRole();
 	}
 
-	protected MachineState simulateMove(MachineState machineState, Move playerMove)
-			throws TransitionDefinitionException {
-		List<Move> movesToSimulate = getMovesToSimulate(playerMove, machineState);
-
-		return getStateMachine().getNextState(machineState, movesToSimulate);
+	protected MachineState simulateRandomJointMove(MachineState machineState, Move playerMove) {
+		List<Move> movesToSimulate = getRandomJointMove(playerMove, machineState);
+		try {
+			return getStateMachine().getNextState(machineState, movesToSimulate);
+		} catch (TransitionDefinitionException e) {
+			e.printStackTrace();
+			return machineState;
+		}
 	}
 }

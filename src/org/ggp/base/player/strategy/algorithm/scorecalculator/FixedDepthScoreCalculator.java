@@ -64,7 +64,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 	public int calculateMinScore(MachineState machineState, Move playerMove, Integer level)
 			throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException,
 			SymbolFormatException {
-		MachineState newMachineState = simulateMove(machineState, playerMove);
+		MachineState newMachineState = simulateRandomJointMove(machineState, playerMove);
 		int result = calculateMaxScore(newMachineState, level + 1);
 		if (result == MIN_GAME_SCORE) {
 
@@ -87,7 +87,7 @@ public class FixedDepthScoreCalculator extends AbstractScoreCalculator {
 	private int getMaxLevelHeuristicScore(MachineState state, Role playerRole) throws MoveDefinitionException,
 			GoalDefinitionException {
 		int heuristicScore = fixedDepthGamer.getHeuristicFunction().getScore(state, playerRole);
-		System.out.print("L=" + ((AbstractFixedDepthGamer) getGamer()).getLevelLimit() + "{" + heuristicScore + "}");
+		System.out.print("L==" + ((AbstractFixedDepthGamer) getGamer()).getLevelLimit() + "{" + heuristicScore + "}");
 
 		return heuristicScore;
 	}

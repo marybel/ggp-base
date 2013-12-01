@@ -61,7 +61,7 @@ public class AlphaBetaScoreCalculator extends AbstractScoreCalculator {
 
 	public int calculateMinScore(MachineState machineState, Move playerMove, int alpha, int beta)
 			throws MoveDefinitionException, TransitionDefinitionException, SymbolFormatException {
-		MachineState newMachineState = simulateMove(machineState, playerMove);
+		MachineState newMachineState = simulateRandomJointMove(machineState, playerMove);
 		int result = calculateMaxScore(newMachineState, alpha, beta);
 		if (beta > result) {
 			beta = result;

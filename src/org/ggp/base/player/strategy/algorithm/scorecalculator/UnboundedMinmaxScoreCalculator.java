@@ -56,7 +56,7 @@ public class UnboundedMinmaxScoreCalculator extends AbstractScoreCalculator {
 			SymbolFormatException {
 		int score = MAX_GAME_SCORE;
 
-		MachineState newMachineState = simulateMove(machineState, playerMove);
+		MachineState newMachineState = simulateRandomJointMove(machineState, playerMove);
 		int result = calculateMaxScore(newMachineState);
 		if (result < score) {
 			score = result;
