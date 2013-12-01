@@ -19,7 +19,7 @@ class FixedDepthWithGoalProximityGamerSpec extends GamerSpecification {
 		given:
 		gamer = new GoalProximityHeuristicFixedDepthGamer(7)
 		GdlConstant RED_PLAYER = GdlPool.getConstant("red")
-		long timeout = System.currentTimeMillis() + 5000
+		long timeout = System.currentTimeMillis() + 10000
 
 		AbstractFixedDepthGamer theGamer = getGamer(RED_PLAYER)
 		theGamer.metaGame(timeout)
@@ -36,7 +36,7 @@ class FixedDepthWithGoalProximityGamerSpec extends GamerSpecification {
 		given:
 		gamer = new GoalProximityHeuristicFixedDepthGamer(5)
 		GdlConstant RED_PLAYER = GdlPool.getConstant("red")
-		long timeout = System.currentTimeMillis() + 5000
+		long timeout = System.currentTimeMillis() + 10000
 
 		AbstractFixedDepthGamer theGamer = getGamer(RED_PLAYER)
 		theGamer.metaGame(timeout)
@@ -53,7 +53,7 @@ class FixedDepthWithGoalProximityGamerSpec extends GamerSpecification {
 		given:
 		gamer = new GoalProximityHeuristicFixedDepthGamer(3)
 		GdlConstant RED_PLAYER = GdlPool.getConstant("red")
-		long timeout = System.currentTimeMillis() + 5000
+		long timeout = System.currentTimeMillis() + 10000
 
 		AbstractFixedDepthGamer theGamer = getGamer(RED_PLAYER)
 		theGamer.metaGame(timeout)
